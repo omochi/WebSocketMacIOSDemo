@@ -8,6 +8,7 @@
         <customObject id="-2" userLabel="File's Owner" customClass="MainWindowController" customModule="WebSocketServer" customModuleProvider="target">
             <connections>
                 <outlet property="connectionNumLabel" destination="qqy-CO-UEp" id="1GJ-Uh-Oi4"/>
+                <outlet property="imageView" destination="eWj-oZ-iKb" id="ZKc-iq-7Pj"/>
                 <outlet property="window" destination="F0z-JX-Cv5" id="gIp-Ho-8D9"/>
             </connections>
         </customObject>
@@ -16,28 +17,38 @@
         <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="F0z-JX-Cv5">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="196" y="240" width="480" height="270"/>
+            <rect key="contentRect" x="196" y="240" width="518" height="395"/>
             <rect key="screenRect" x="0.0" y="0.0" width="2048" height="1129"/>
             <view key="contentView" id="se5-gp-TjO">
-                <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
+                <rect key="frame" x="0.0" y="0.0" width="518" height="395"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ref-y4-4P2">
-                        <rect key="frame" x="20" y="234" width="440" height="16"/>
+                        <rect key="frame" x="20" y="51" width="478" height="324"/>
                         <subviews>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="qqy-CO-UEp">
-                                <rect key="frame" x="-2" y="0.0" width="87" height="16"/>
+                                <rect key="frame" x="-2" y="308" width="87" height="16"/>
                                 <textFieldCell key="cell" lineBreakMode="clipping" title="connection: 0" id="Cln-B7-gde">
                                     <font key="font" usesAppearanceFont="YES"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
+                            <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="eWj-oZ-iKb">
+                                <rect key="frame" x="0.0" y="0.0" width="300" height="300"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="300" id="CSq-Gg-gfA"/>
+                                    <constraint firstAttribute="width" constant="300" id="wKr-Fu-1Cg"/>
+                                </constraints>
+                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="9i8-gq-zA3"/>
+                            </imageView>
                         </subviews>
                         <visibilityPriorities>
                             <integer value="1000"/>
+                            <integer value="1000"/>
                         </visibilityPriorities>
                         <customSpacing>
+                            <real value="3.4028234663852886e+38"/>
                             <real value="3.4028234663852886e+38"/>
                         </customSpacing>
                     </stackView>
@@ -51,7 +62,7 @@
             <connections>
                 <outlet property="delegate" destination="-2" id="0bl-1N-AYu"/>
             </connections>
-            <point key="canvasLocation" x="127" y="147"/>
+            <point key="canvasLocation" x="146" y="209.5"/>
         </window>
     </objects>
 </document>

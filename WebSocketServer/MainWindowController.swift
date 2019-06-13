@@ -11,6 +11,7 @@ class MainWindowController: NSWindowController, NSWindowDelegate {
     }
     
     @IBOutlet private var connectionNumLabel: NSTextField!
+    @IBOutlet private var imageView: NSImageView!
     
     var listener: NWListener!
     var clients: [Client] = []
@@ -19,6 +20,8 @@ class MainWindowController: NSWindowController, NSWindowDelegate {
         super.windowDidLoad()
         
         update {
+            imageView.imageScaling = .scaleAxesIndependently
+            
             let options = NWProtocolWebSocket.Options()
             options.autoReplyPing = true
             let parameters = NWParameters.tcp
@@ -60,17 +63,7 @@ class MainWindowController: NSWindowController, NSWindowDelegate {
             }
         }
         newConnection.start(queue: .main)
-
-        let metadata = NWProtocolWebSocket.Metadata(opcode: NWProtocolWebSocket.Opcode.text)
-        let context = NWConnection.ContentContext(identifier: "context",
-                                                   metadata: [metadata])
-        let text = "hello"
-        let data = text.data(using: .utf8)!
-
-        newConnection.send(content: data,
-                           contentContext: context,
-                           isComplete: true,
-                           completion: .contentProcessed({ (error) in }))
+        receive(connection: newConnection)
     }
     
     private func removeConnection(_ connection: NWConnection) {
@@ -103,12 +96,13 @@ class MainWindowController: NSWindowController, NSWindowDelegate {
                     {
                         assert(metadatas.count == 1)
                         assert(isComplete)
-                        print("opcode: \(metadata.opcode)")
                         
-                        if let data = data {
-                            print("\(data.count)")
-                        } else {
-                            print("no data")
+                        switch metadata.opcode {
+                        case .binary:
+                            if let data = data {
+                                self.handleBinary(data: data)
+                            }
+                        default: break
                         }
                     } else {
                         print("no WebSocket Metadata")
@@ -121,6 +115,32 @@ class MainWindowController: NSWindowController, NSWindowDelegate {
                 }
             }
         }
+    }
+    
+    private func handleBinary(data: Data) {
+        if data.count < 4 {
+            return
+        }
+        
+        var data = data
+        
+        let codeData = data.subdata(in: data.startIndex..<(data.startIndex + 4))
+        let code = codeData.withUnsafeBytes { (b) in
+            Int(CFSwapInt32BigToHost(b.bindMemory(to: UInt32.self)[0]))
+        }
+        data = data.subdata(in: (data.startIndex + 4)..<data.endIndex)
+        
+        switch code {
+        case 1:
+            guard let image = NSImage(data: data) else {
+                print("broken jpeg")
+                return
+            }
+            imageView.image = image
+        default:
+            break
+        }
+        
     }
     
     private func update(_ f: () throws -> Void) {
