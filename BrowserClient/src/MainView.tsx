@@ -113,10 +113,11 @@ export class MainView extends React.Component<{}, MainViewState> {
                 width: "300px",
                 height: "300px",
                 objectFit: "cover",
-                transform: "rotate(90deg)"
-            }
+                transform: "rotate(90deg)",
+                WebkitTransform: "rotate(90deg)"
+            };
 
-            return <img src={this.state.imageSrc} style={style}/>
+            return <img src={this.state.imageSrc} style={style} />
         }
 
         return <div>

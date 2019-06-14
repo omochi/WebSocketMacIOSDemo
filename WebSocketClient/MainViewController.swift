@@ -35,6 +35,10 @@ class MainViewController: UIViewController,
                                                  target: self, action: #selector(onConnectButton))
             self.closeButton = UIBarButtonItem(title: "Close", style: .plain,
                                               target: self, action: #selector(onCloseButton))
+
+            cameraView.layer.addObserver(self, forKeyPath: "bounds",
+                                         options: [],
+                                         context: nil)
             
             let session = URLSession(configuration: .default,
                                      delegate: self,
@@ -43,10 +47,19 @@ class MainViewController: UIViewController,
         }
     }
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        
+    override func observeValue(forKeyPath keyPath: String?,
+                               of object: Any?,
+                               change: [NSKeyValueChangeKey : Any]?,
+                               context: UnsafeMutableRawPointer?)
+    {
+        if let layer = object as? CALayer, layer == cameraView.layer {
+            layoutPreviewLayer()
+        }
+    }
+    
+    private func layoutPreviewLayer() {
         if let layer = previewLayer {
+            print(cameraView.layer.bounds)
             layer.frame = cameraView.layer.bounds
         }
     }
@@ -86,8 +99,7 @@ class MainViewController: UIViewController,
         self.previewLayer = layer
         layer.videoGravity = .resizeAspectFill
         cameraView.layer.insertSublayer(layer, at: 0)
-        
-        view.setNeedsLayout()
+        layoutPreviewLayer()
         
         captureSession.startRunning()
     }
