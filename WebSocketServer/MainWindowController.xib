@@ -8,7 +8,7 @@
         <customObject id="-2" userLabel="File's Owner" customClass="MainWindowController" customModule="WebSocketServer" customModuleProvider="target">
             <connections>
                 <outlet property="connectionNumLabel" destination="qqy-CO-UEp" id="1GJ-Uh-Oi4"/>
-                <outlet property="imageView" destination="eWj-oZ-iKb" id="ZKc-iq-7Pj"/>
+                <outlet property="imageView" destination="44f-Dk-83Q" id="dwy-3l-4XW"/>
                 <outlet property="window" destination="F0z-JX-Cv5" id="gIp-Ho-8D9"/>
             </connections>
         </customObject>
@@ -21,7 +21,7 @@
             <rect key="screenRect" x="0.0" y="0.0" width="2048" height="1129"/>
             <view key="contentView" id="se5-gp-TjO">
                 <rect key="frame" x="0.0" y="0.0" width="518" height="395"/>
-                <autoresizingMask key="autoresizingMask"/>
+                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
                     <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ref-y4-4P2">
                         <rect key="frame" x="20" y="51" width="478" height="324"/>
@@ -34,14 +34,13 @@
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="eWj-oZ-iKb">
+                            <customView translatesAutoresizingMaskIntoConstraints="NO" id="44f-Dk-83Q" customClass="ImageView" customModule="WebSocketServer" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="0.0" width="300" height="300"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="300" id="CSq-Gg-gfA"/>
-                                    <constraint firstAttribute="width" constant="300" id="wKr-Fu-1Cg"/>
+                                    <constraint firstAttribute="width" constant="300" id="lvQ-li-SCT"/>
+                                    <constraint firstAttribute="height" constant="300" id="mVK-LG-XB7"/>
                                 </constraints>
-                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="9i8-gq-zA3"/>
-                            </imageView>
+                            </customView>
                         </subviews>
                         <visibilityPriorities>
                             <integer value="1000"/>

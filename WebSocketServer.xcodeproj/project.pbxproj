@@ -12,6 +12,9 @@
 		D64705B422B1EF7E0089E5BD /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = D64705B222B1EF7E0089E5BD /* MainMenu.xib */; };
 		D64705BE22B1EF9D0089E5BD /* MainWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64705BC22B1EF9D0089E5BD /* MainWindowController.swift */; };
 		D64705BF22B1EF9D0089E5BD /* MainWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D64705BD22B1EF9D0089E5BD /* MainWindowController.xib */; };
+		D64DD9FF22B333FF004C203B /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64DD9FE22B333FF004C203B /* Message.swift */; };
+		D64DDA0122B337B0004C203B /* Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64DDA0022B337B0004C203B /* Client.swift */; };
+		D64DDA0322B33CC2004C203B /* ImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64DDA0222B33CC2004C203B /* ImageView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,6 +26,9 @@
 		D64705B622B1EF7E0089E5BD /* WebSocketServer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WebSocketServer.entitlements; sourceTree = "<group>"; };
 		D64705BC22B1EF9D0089E5BD /* MainWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowController.swift; sourceTree = "<group>"; };
 		D64705BD22B1EF9D0089E5BD /* MainWindowController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainWindowController.xib; sourceTree = "<group>"; };
+		D64DD9FE22B333FF004C203B /* Message.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
+		D64DDA0022B337B0004C203B /* Client.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Client.swift; sourceTree = "<group>"; };
+		D64DDA0222B33CC2004C203B /* ImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,6 +61,7 @@
 		D64705AD22B1EF7C0089E5BD /* WebSocketServer */ = {
 			isa = PBXGroup;
 			children = (
+				D64DD9FD22B333FF004C203B /* Common */,
 				D64705AE22B1EF7C0089E5BD /* AppDelegate.swift */,
 				D64705B022B1EF7E0089E5BD /* Assets.xcassets */,
 				D64705B222B1EF7E0089E5BD /* MainMenu.xib */,
@@ -62,9 +69,20 @@
 				D64705B622B1EF7E0089E5BD /* WebSocketServer.entitlements */,
 				D64705BC22B1EF9D0089E5BD /* MainWindowController.swift */,
 				D64705BD22B1EF9D0089E5BD /* MainWindowController.xib */,
+				D64DDA0022B337B0004C203B /* Client.swift */,
+				D64DDA0222B33CC2004C203B /* ImageView.swift */,
 			);
 			path = WebSocketServer;
 			sourceTree = "<group>";
+		};
+		D64DD9FD22B333FF004C203B /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				D64DD9FE22B333FF004C203B /* Message.swift */,
+			);
+			name = Common;
+			path = WebSocketClient/Common;
+			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
 
@@ -137,7 +155,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D64DDA0322B33CC2004C203B /* ImageView.swift in Sources */,
+				D64DD9FF22B333FF004C203B /* Message.swift in Sources */,
 				D64705BE22B1EF9D0089E5BD /* MainWindowController.swift in Sources */,
+				D64DDA0122B337B0004C203B /* Client.swift in Sources */,
 				D64705AF22B1EF7C0089E5BD /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

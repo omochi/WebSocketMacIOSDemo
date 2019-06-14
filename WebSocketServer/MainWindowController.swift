@@ -2,25 +2,19 @@ import Cocoa
 import Network
 
 class MainWindowController: NSWindowController, NSWindowDelegate {
-    class Client {
-        let connection: NWConnection
-        
-        init(connection: NWConnection) {
-            self.connection = connection
-        }
-    }
-    
     @IBOutlet private var connectionNumLabel: NSTextField!
-    @IBOutlet private var imageView: NSImageView!
+    @IBOutlet private var imageView: ImageView!
     
     var listener: NWListener!
     var clients: [Client] = []
+    
+    var image: NSImage?
     
     override func windowDidLoad() {
         super.windowDidLoad()
         
         update {
-            imageView.imageScaling = .scaleAxesIndependently
+            imageView.contentsGravity = .resizeAspectFill
             
             let options = NWProtocolWebSocket.Options()
             options.autoReplyPing = true
@@ -48,99 +42,49 @@ class MainWindowController: NSWindowController, NSWindowDelegate {
         print("newConnection: \(newConnection)")
         let client = Client(connection: newConnection)
         clients.append(client)
-        newConnection.stateUpdateHandler = { [weak self, weak newConnection] (state) in
+        
+        client.errorHandler = { [weak self, weak client] (error) in
             guard let self = self,
-                let newConnection = newConnection else { return }
+                let client = client else { return }
             
             self.update {
-                switch state {
-                case .waiting(let error), .failed(let error):
-                    print("error: \(error)")
-                    self.removeConnection(newConnection)
-                default:
-                    break
-                }
+                print("error: \(error)")
+                self.removeClient(client)
             }
         }
-        newConnection.start(queue: .main)
-        receive(connection: newConnection)
-    }
-    
-    private func removeConnection(_ connection: NWConnection) {
-        print("removeConnection: \(connection)")
-        clients.removeAll { $0.connection === connection }
-    }
-    
-    private func isValidConnection(_ connection: NWConnection) -> Bool {
-        clients.contains { $0.connection === connection }
-    }
-    
-    private func receive(connection: NWConnection) {
-        guard isValidConnection(connection) else {
-            return
-        }
-        
-        connection.receiveMessage { [weak self, weak connection] (data, context, isComplete, error) in
+        client.binaryHandler = { [weak self, weak client] (data) in
             guard let self = self,
-                let connection = connection else { return }
+                let client = client else { return }
             
             self.update {
-                do {
-                    if let error = error {
-                        throw error
-                    }
-                    
-                    if let context = context,
-                        let metadatas = .some(context.protocolMetadata.compactMap { $0 as? NWProtocolWebSocket.Metadata }),
-                        let metadata = metadatas.first
-                    {
-                        assert(metadatas.count == 1)
-                        assert(isComplete)
-                        
-                        switch metadata.opcode {
-                        case .binary:
-                            if let data = data {
-                                self.handleBinary(data: data)
-                            }
-                        default: break
-                        }
-                    } else {
-                        print("no WebSocket Metadata")
-                    }
-                    
-                    self.receive(connection: connection)
-                } catch {
-                    print("error: \(error)")
-                    self.removeConnection(connection)
-                }
+                self.handleBinary(client: client, data: data)
             }
         }
+        
+        client.start()
     }
     
-    private func handleBinary(data: Data) {
-        if data.count < 4 {
+    private func removeClient(_ client: Client) {
+        print("removeClient: \(client)")
+        clients.removeAll { $0 === client }
+    }
+    
+    private func handleBinary(client: Client, data: Data) {
+        guard let message = Messages.parse(data: data) else {
             return
         }
-        
-        var data = data
-        
-        let codeData = data.subdata(in: data.startIndex..<(data.startIndex + 4))
-        let code = codeData.withUnsafeBytes { (b) in
-            Int(CFSwapInt32BigToHost(b.bindMemory(to: UInt32.self)[0]))
-        }
-        data = data.subdata(in: (data.startIndex + 4)..<data.endIndex)
-        
-        switch code {
-        case 1:
-            guard let image = NSImage(data: data) else {
+
+        switch message {
+        case let m as JpegMessage:
+            guard let image = NSImage(data: m.jpeg) else {
                 print("broken jpeg")
                 return
             }
-            imageView.image = image
+            client.isJpegSender = true
+            self.image = image
         default:
             break
         }
-        
     }
     
     private func update(_ f: () throws -> Void) {
@@ -156,5 +100,6 @@ class MainWindowController: NSWindowController, NSWindowDelegate {
     
     private func render() {
         connectionNumLabel.stringValue = "connection: \(clients.count)"
+        imageView.image = image
     }
 }

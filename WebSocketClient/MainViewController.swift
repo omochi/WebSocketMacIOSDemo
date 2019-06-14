@@ -7,7 +7,6 @@ class MainViewController: UIViewController,
     AVCaptureVideoDataOutputSampleBufferDelegate
 {
     @IBOutlet private var cameraView: UIView!
-    @IBOutlet private var imageCheckView: UIImageView!
     
     var urlSession: URLSession!
     var webSocket: URLSessionWebSocketTask?
@@ -104,35 +103,36 @@ class MainViewController: UIViewController,
                                   bitmapInfo: bitmapInfo)!
         
         let cgImage = cgContext.makeImage()!
-        let image = UIImage(cgImage: cgImage, scale: 1, orientation: UIImage.Orientation.right)
+        let image = UIImage(cgImage: cgImage, scale: 1,
+                            orientation: UIImage.Orientation.right)
         let jpeg = image.jpegData(compressionQuality: 0.9)!
 
         CVPixelBufferUnlockBaseAddress(ib, CVPixelBufferLockFlags.readOnly)
         
         DispatchQueue.main.async {
-            self.emitJpeg(data: jpeg)
+            self.latestImageJpeg = jpeg
+            self.sendIfAvailable()
         }
     }
-    
-    private func emitJpeg(data: Data) {
-        self.latestImageJpeg = data
-        _sendIfNeed()
+
+    private func sendIfAvailable() {
+        guard let _ = webSocket,
+            !isSending else { return }
+        
+        if let jpeg = latestImageJpeg {
+            self.latestImageJpeg = nil
+            let message = JpegMessage(jpeg: jpeg)
+            _send(data: message.serialize())
+        }
     }
-    
-    private func _sendJpeg(data: Data) {
+        
+    private func _send(data: Data) {
         precondition(!isSending)
         let webSocket = self.webSocket!
         
         isSending = true
         
-        var message = Data()
-        let code = CFSwapInt32HostToBig(1)
-        withUnsafeBytes(of: code) { (b) in
-            message.append(b.bindMemory(to: UInt8.self))
-        }
-        message.append(data)
-        
-        webSocket.send(.data(message)) { [weak self] (error) in
+        webSocket.send(.data(data)) { [weak self] (error) in
             guard let self = self else { return }
             
             self.update {
@@ -143,22 +143,12 @@ class MainViewController: UIViewController,
                         throw error
                     }
                     
-                    self._sendIfNeed()
+                    self.sendIfAvailable()
                 } catch {
                     self.showError(error)
                     self.closeWebSocket()
                 }
             }
-        }
-    }
-    
-    private func _sendIfNeed() {
-        guard let _ = webSocket,
-            !isSending else { return }
-        
-        if let jpeg = latestImageJpeg {
-            self.latestImageJpeg = nil
-            _sendJpeg(data: jpeg)
         }
     }
     
