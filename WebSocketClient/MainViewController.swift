@@ -59,7 +59,6 @@ class MainViewController: UIViewController,
     
     private func layoutPreviewLayer() {
         if let layer = previewLayer {
-            print(cameraView.layer.bounds)
             layer.frame = cameraView.layer.bounds
         }
     }
