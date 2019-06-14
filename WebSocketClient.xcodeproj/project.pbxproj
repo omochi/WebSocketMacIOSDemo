@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		D64DD9FC22B3307D004C203B /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64DD9FB22B3307D004C203B /* Message.swift */; };
+		D6523AF122B3A26100B0E3FA /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6523AF022B3A26100B0E3FA /* Connection.swift */; };
+		D6523AF322B3A44000B0E3FA /* MessageError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6523AF222B3A44000B0E3FA /* MessageError.swift */; };
+		D6523AF522B3A73B00B0E3FA /* CameraCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6523AF422B3A73B00B0E3FA /* CameraCapture.swift */; };
 		D6C05BA422B217EA0044941A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6C05BA322B217EA0044941A /* AppDelegate.swift */; };
 		D6C05BAD22B217EC0044941A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D6C05BAC22B217EC0044941A /* Assets.xcassets */; };
 		D6C05BB022B217EC0044941A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D6C05BAE22B217EC0044941A /* LaunchScreen.storyboard */; };
@@ -18,6 +21,9 @@
 
 /* Begin PBXFileReference section */
 		D64DD9FB22B3307D004C203B /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
+		D6523AF022B3A26100B0E3FA /* Connection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Connection.swift; sourceTree = "<group>"; };
+		D6523AF222B3A44000B0E3FA /* MessageError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageError.swift; sourceTree = "<group>"; };
+		D6523AF422B3A73B00B0E3FA /* CameraCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCapture.swift; sourceTree = "<group>"; };
 		D6C05BA022B217EA0044941A /* WebSocketClient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WebSocketClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D6C05BA322B217EA0044941A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D6C05BAC22B217EC0044941A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -43,6 +49,7 @@
 			isa = PBXGroup;
 			children = (
 				D64DD9FB22B3307D004C203B /* Message.swift */,
+				D6523AF222B3A44000B0E3FA /* MessageError.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -74,6 +81,8 @@
 				D6C05BB722B218BB0044941A /* MainViewController.swift */,
 				D6C05BB822B218BB0044941A /* MainViewController.xib */,
 				D6EDF68F22B3872F008DAFF4 /* Graphics.swift */,
+				D6523AF022B3A26100B0E3FA /* Connection.swift */,
+				D6523AF422B3A73B00B0E3FA /* CameraCapture.swift */,
 			);
 			path = WebSocketClient;
 			sourceTree = "<group>";
@@ -149,9 +158,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D6523AF522B3A73B00B0E3FA /* CameraCapture.swift in Sources */,
 				D6C05BA422B217EA0044941A /* AppDelegate.swift in Sources */,
 				D64DD9FC22B3307D004C203B /* Message.swift in Sources */,
+				D6523AF122B3A26100B0E3FA /* Connection.swift in Sources */,
 				D6EDF69022B3872F008DAFF4 /* Graphics.swift in Sources */,
+				D6523AF322B3A44000B0E3FA /* MessageError.swift in Sources */,
 				D6C05BB922B218BB0044941A /* MainViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

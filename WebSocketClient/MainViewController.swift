@@ -2,9 +2,7 @@ import UIKit
 import AVFoundation
 import os
 
-class MainViewController: UIViewController,
-    URLSessionWebSocketDelegate,
-    AVCaptureVideoDataOutputSampleBufferDelegate
+class MainViewController: UIViewController
 {
     @IBOutlet private var ipTextField: UITextField!
     @IBOutlet private var isSenderSwitch: UISwitch!
@@ -20,29 +18,17 @@ class MainViewController: UIViewController,
             UserDefaults.standard.synchronize()
         }
     }
-    var isSender: Bool = false {
+    
+    var isSender: Bool { _isSender }
+    private var _isSender: Bool = false {
         didSet {
-            if isSender {
-                startCamera()
-            } else {
-                stopCamera()
-            }
-            
             UserDefaults.standard.set(isSender, forKey: "isSender")
             UserDefaults.standard.synchronize()
         }
     }
     
-    var urlSession: URLSession!
-    var webSocket: URLSessionWebSocketTask?
-    var isSending: Bool = false
-    
-    var captureOutputQueue: DispatchQueue = DispatchQueue(label: "captureOutputQueue")
-    var captureSession: AVCaptureSession?
-    var videoOutput: AVCaptureVideoDataOutput?
-    var previewLayer: AVCaptureVideoPreviewLayer?
-    
-    var sendPendingJpeg: Data?
+    var connection: Connection?
+    var cameraCapture: CameraCapture?
     var receivedImage: UIImage?
     
     override func viewDidLoad() {
@@ -54,18 +40,11 @@ class MainViewController: UIViewController,
             self.closeButton = UIBarButtonItem(title: "Close", style: .plain,
                                               target: self, action: #selector(onCloseButton))
 
-            cameraView.layer.addObserver(self, forKeyPath: "bounds",
-                                         options: [],
-                                         context: nil)
-            
-            let session = URLSession(configuration: .default,
-                                     delegate: self,
-                                     delegateQueue: .main)
-            self.urlSession = session
-            
             let ud = UserDefaults.standard
+            
             ip = ud.string(forKey: "ip") ?? ""
-            isSender = ud.bool(forKey: "isSender")
+            
+            try setIsSender(value: ud.bool(forKey: "isSender"))
         }
     }
     
@@ -78,236 +57,79 @@ class MainViewController: UIViewController,
         }
     }
     
-    override func observeValue(forKeyPath keyPath: String?,
-                               of object: Any?,
-                               change: [NSKeyValueChangeKey : Any]?,
-                               context: UnsafeMutableRawPointer?)
-    {
-        if let layer = object as? CALayer, layer == cameraView.layer {
-            layoutPreviewLayer()
-        }
-    }
-    
-    private func layoutPreviewLayer() {
-        if let layer = previewLayer {
-            layer.frame = cameraView.layer.bounds
-        }
-    }
-    
-    private func startCamera() {
-        if let _ = captureSession {
-            return
-        }
+    private func startConnection() {
+        let url = URL(string: "ws://\(self.ip):81")!
         
-        let captureSession = AVCaptureSession()
-        self.captureSession = captureSession
-        captureSession.sessionPreset = .vga640x480
+        let connection = Connection(url: url)
+        self.connection = connection
         
-        let deviceDiscovery = AVCaptureDevice.DiscoverySession(deviceTypes: [AVCaptureDevice.DeviceType.builtInWideAngleCamera],
-                                                               mediaType: AVMediaType.video,
-                                                               position: AVCaptureDevice.Position.back)
-        guard let camera = deviceDiscovery.devices.first else {
-            print("no camera")
-            return
-        }
-        
-        guard let input = try? AVCaptureDeviceInput(device: camera) else {
-            print("input failed")
-            return
-        }
-        captureSession.addInput(input)
-        
-        let output = AVCaptureVideoDataOutput()
-        self.videoOutput = output
-        output.videoSettings = [
-            String(kCVPixelBufferPixelFormatTypeKey): kCVPixelFormatType_32BGRA
-        ]
-        output.setSampleBufferDelegate(self, queue: captureOutputQueue)
-        captureSession.addOutput(output)
-
-        let layer = AVCaptureVideoPreviewLayer(session: captureSession)
-        self.previewLayer = layer
-        layer.videoGravity = .resizeAspectFill
-        cameraView.layer.insertSublayer(layer, at: 0)
-        layoutPreviewLayer()
-        
-        captureSession.startRunning()
-    }
-    
-    private func stopCamera() {
-        if let session = self.captureSession {
-            session.stopRunning()
-            self.captureSession = nil
-        }
-        
-        if let layer = self.previewLayer {
-            layer.removeFromSuperlayer()
-            self.previewLayer = nil
-        }
-        
-        if let output = self.videoOutput {
-            output.setSampleBufferDelegate(nil, queue: nil)
-            self.videoOutput = nil
-        }
-        
-        sendPendingJpeg = nil
-    }
-
-    func captureOutput(_ output: AVCaptureOutput,
-                       didOutput sampleBuffer: CMSampleBuffer,
-                       from connection: AVCaptureConnection)
-    {
-        let captureCGImage = CGImage.fromVideoCaptureBuffer(sampleBuffer)
-        
-        let size = CGSize(width: captureCGImage.width, height: captureCGImage.height)
-        
-        let bitmapInfo = CGBitmapInfo.byteOrder32Little.rawValue |
-            CGImageAlphaInfo.premultipliedFirst.rawValue
-    
-        let context = CGContext(data: nil,
-                                width: Int(size.height),
-                                height: Int(size.width),
-                                bitsPerComponent: 8,
-                                bytesPerRow: 4 * captureCGImage.width,
-                                space: CGColorSpaceCreateDeviceRGB(),
-                                bitmapInfo: bitmapInfo)!
-        context.translateBy(x: 0, y: size.width)
-        context.rotate(by: -90 * CGFloat.pi / 180)
-        context.draw(captureCGImage, in: CGRect(x: 0, y: 0, width: size.width, height: size.height))
-        
-        let cgImage = context.makeImage()!
-        
-        let image = UIImage(cgImage: cgImage)
-        let jpeg = image.jpegData(compressionQuality: 0.9)!
-        
-        DispatchQueue.main.async {
-            self.sendPendingJpeg = jpeg
-            self.sendIfAvailable()
-        }
-    }
-
-    private func sendIfAvailable() {
-        guard let _ = webSocket,
-            !isSending else { return }
-        
-        if let jpeg = sendPendingJpeg {
-            self.sendPendingJpeg = nil
-            let message = JpegMessage(jpeg: jpeg)
-            _send(data: message.serialize())
-        }
-    }
-        
-    private func _send(data: Data) {
-        precondition(!isSending)
-        let webSocket = self.webSocket!
-        
-        isSending = true
-        
-        webSocket.send(.data(data)) { [weak self] (error) in
+        connection.errorHandler = { [weak self] (error) in
             guard let self = self else { return }
             
             self.update {
-                self.isSending = false
-                
-                do {
-                    if let error = error {
-                        throw error
-                    }
-                    
-                    self.sendIfAvailable()
-                } catch {
-                    self.showError(error)
-                    self.closeWebSocket()
+                self.showError(error)
+                self.closeConnection()
+            }
+        }
+        
+        connection.jpegHandler = { [weak self] (image) in
+            guard let self = self else { return }
+            
+            self.update {
+                self.receivedImage = image
+            }
+        }
+        
+        connection.start()
+    }
+    
+    private func closeConnection() {
+        connection?.close()
+        connection = nil
+    }
+    
+    private func startCapture() throws {
+        let capture = CameraCapture(queue: DispatchQueue(label: "CameraCapture"),
+                                    previewView: cameraView)
+        self.cameraCapture = capture
+        
+        capture.jpegHandler = { [weak self] (jpeg) in
+            guard let self = self else { return }
+            
+            DispatchQueue.main.async {
+                self.update {
+                    self.connection?.sendJpeg(data: jpeg)
                 }
             }
         }
+        
+        try capture.start()
     }
     
     @objc private func onConnectButton() {
         update {
             view.endEditing(true)
-            
-            let url = URL(string: "ws://\(self.ip):81")!
-            let request = URLRequest(url: url)
-            let task = urlSession.webSocketTask(with: request)
-            self.webSocket = task
-            task.resume()
-            receive()
+            startConnection()
         }
     }
     
     @objc private func onCloseButton() {
         update {
-            closeWebSocket()
+            closeConnection()
         }
     }
-    
-    private func closeWebSocket() {
-        webSocket?.cancel()
-        webSocket = nil
-    }
-    
-    private func receive() {
-        guard let webSocket = self.webSocket else { return }
+
+    private func setIsSender(value: Bool) throws {
+        _isSender = value
         
-        webSocket.receive { [weak self] (wsMessage) in
-            guard let self = self else { return }
-            
-            self.update {
-                do {
-                    self.processMessage(try wsMessage.get())
- 
-                    self.receive()
-                } catch {
-                    self.showError(error)
-                    self.closeWebSocket()
-                }
-            }
+        if isSender {
+            try startCapture()
+        } else {
+            cameraCapture?.stop()
+            cameraCapture = nil
         }
     }
-    
-    private func processMessage(_ wsMessage: URLSessionWebSocketTask.Message) {
-        switch wsMessage {
-        case .data(let data):
-            guard let message = Messages.parse(data: data) else {
-                print("invalid message")
-                return
-            }
-            
-            switch message {
-            case let m as JpegMessage:
-                guard let image = UIImage(data: m.jpeg) else {
-                    print("broken jpeg")
-                    return
-                }
-                
-                receivedImage = image
-            default:
-                break
-            }
-        case .string(let string):
-            print("string: \(string)")
-        @unknown default:
-            print("unknown message type")
-        }
-    }
-    
-    func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol protocol: String?)
-    {
-        update {
-            print("connected: \(`protocol`.debugDescription)")
-        }
-    }
-    
-    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?)
-    {
-        update {
-            print("complete, \(error.debugDescription)")
-            
-            self.closeWebSocket()
-        }
-    }
-    
+
     @IBAction private func onIPTextFieldChanged() {
         update {
             ip = ipTextField.text ?? ""
@@ -316,7 +138,7 @@ class MainViewController: UIViewController,
     
     @IBAction private func onIsSenderSwitchChanged() {
         update {
-            isSender = isSenderSwitch.isOn
+            try setIsSender(value: isSenderSwitch.isOn)
         }
     }
     
@@ -335,11 +157,10 @@ class MainViewController: UIViewController,
     }
     
     private func showError(_ error: Error) {
-        showError("\(error)")
-    }
-    
-    private func showError(_ error: String) {
-        let alert = UIAlertController(title: "エラー", message: error, preferredStyle: UIAlertController.Style.alert)
+        let message = "\(error)"
+        let alert = UIAlertController(title: "エラー",
+                                      message: message,
+                                      preferredStyle: UIAlertController.Style.alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         self.present(alert, animated: true, completion: nil)
     }
@@ -347,7 +168,7 @@ class MainViewController: UIViewController,
     private func render() {
         let rightButton: UIBarButtonItem?
         
-        if let _ = webSocket {
+        if let _ = connection {
             rightButton = closeButton
 
             ipTextField.isEnabled = false
@@ -361,7 +182,7 @@ class MainViewController: UIViewController,
         
         navigationItem.rightBarButtonItem = rightButton
         
-        if let _ = captureSession {
+        if let _ = cameraCapture {
             cameraView.isHidden = false
             receiveImageView.isHidden = true
         } else {
