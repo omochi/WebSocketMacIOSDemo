@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14810.11" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14766.13"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
@@ -9,6 +10,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MainViewController" customModule="WebSocketClient" customModuleProvider="target">
             <connections>
                 <outlet property="cameraView" destination="HoA-oA-1rw" id="lXO-JL-hBN"/>
+                <outlet property="ipTextField" destination="eXp-8E-hBv" id="mqP-b7-OTI"/>
                 <outlet property="isSenderSwitch" destination="T8Z-bs-Vj7" id="Pst-CR-0Ji"/>
                 <outlet property="receiveImageView" destination="bG7-zF-znp" id="zm1-Um-lT5"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
@@ -20,34 +22,65 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="p1Y-pK-0O0">
-                    <rect key="frame" x="0.0" y="44" width="414" height="859"/>
+                    <rect key="frame" x="0.0" y="88" width="414" height="917"/>
                     <subviews>
-                        <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="a0X-Fq-4wN">
-                            <rect key="frame" x="0.0" y="0.0" width="414" height="31"/>
+                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="Vu7-y2-5JT">
+                            <rect key="frame" x="0.0" y="0.0" width="414" height="89"/>
                             <subviews>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="isSender" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="60J-7u-vXt">
-                                    <rect key="frame" x="0.0" y="0.0" width="365" height="31"/>
-                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                    <nil key="textColor"/>
-                                    <nil key="highlightedColor"/>
-                                </label>
-                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="T8Z-bs-Vj7">
-                                    <rect key="frame" x="365" y="0.0" width="51" height="31"/>
-                                    <connections>
-                                        <action selector="onIsSenderSwitchChanged" destination="-1" eventType="valueChanged" id="Zfy-S0-8g3"/>
-                                    </connections>
-                                </switch>
+                                <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fjz-at-uf4">
+                                    <rect key="frame" x="20" y="8" width="374" height="34"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="IP" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Pnd-5I-01L">
+                                            <rect key="frame" x="0.0" y="0.0" width="120" height="34"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="120" id="ffR-EV-HfL"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="eXp-8E-hBv">
+                                            <rect key="frame" x="120" y="0.0" width="254" height="34"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <textInputTraits key="textInputTraits"/>
+                                            <connections>
+                                                <action selector="onIPTextFieldChanged" destination="-1" eventType="editingChanged" id="Tbn-SZ-Sfk"/>
+                                            </connections>
+                                        </textField>
+                                    </subviews>
+                                </stackView>
+                                <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="a0X-Fq-4wN">
+                                    <rect key="frame" x="20" y="50" width="374" height="31"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="isSender" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="60J-7u-vXt">
+                                            <rect key="frame" x="0.0" y="0.0" width="120" height="31"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="120" id="K2f-cl-MjE"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="T8Z-bs-Vj7">
+                                            <rect key="frame" x="120" y="0.0" width="256" height="31"/>
+                                            <connections>
+                                                <action selector="onIsSenderSwitchChanged" destination="-1" eventType="valueChanged" id="Zfy-S0-8g3"/>
+                                            </connections>
+                                        </switch>
+                                    </subviews>
+                                </stackView>
                             </subviews>
+                            <edgeInsets key="layoutMargins" top="8" left="20" bottom="8" right="20"/>
                         </stackView>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HoA-oA-1rw">
-                            <rect key="frame" x="0.0" y="31" width="414" height="414"/>
+                            <rect key="frame" x="0.0" y="89" width="414" height="414"/>
                             <color key="backgroundColor" xcode11CocoaTouchSystemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                             <constraints>
                                 <constraint firstAttribute="width" secondItem="HoA-oA-1rw" secondAttribute="height" multiplier="1:1" id="glo-4j-umd"/>
                             </constraints>
                         </view>
                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="bG7-zF-znp">
-                            <rect key="frame" x="0.0" y="445" width="414" height="414"/>
+                            <rect key="frame" x="0.0" y="503" width="414" height="414"/>
                             <constraints>
                                 <constraint firstAttribute="width" secondItem="bG7-zF-znp" secondAttribute="height" multiplier="1:1" id="W6B-iS-9Iq"/>
                             </constraints>
@@ -56,6 +89,7 @@
                 </stackView>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <gestureRecognizers/>
             <constraints>
                 <constraint firstItem="p1Y-pK-0O0" firstAttribute="trailing" secondItem="fnl-2z-Ty3" secondAttribute="trailing" id="Nab-rL-X2y"/>
                 <constraint firstItem="p1Y-pK-0O0" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="OdG-qR-SMm"/>
@@ -64,7 +98,15 @@
             <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
+            <connections>
+                <outletCollection property="gestureRecognizers" destination="6fm-ip-6Bx" appends="YES" id="OoF-KD-Ic5"/>
+            </connections>
             <point key="canvasLocation" x="79.710144927536234" y="267.1875"/>
         </view>
+        <tapGestureRecognizer id="6fm-ip-6Bx">
+            <connections>
+                <action selector="onTapView" destination="-1" id="ZaN-7r-Nnf"/>
+            </connections>
+        </tapGestureRecognizer>
     </objects>
 </document>

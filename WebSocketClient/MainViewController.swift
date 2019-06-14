@@ -6,6 +6,7 @@ class MainViewController: UIViewController,
     URLSessionWebSocketDelegate,
     AVCaptureVideoDataOutputSampleBufferDelegate
 {
+    @IBOutlet private var ipTextField: UITextField!
     @IBOutlet private var isSenderSwitch: UISwitch!
     @IBOutlet private var cameraView: UIView!
     @IBOutlet private var receiveImageView: UIImageView!
@@ -13,7 +14,24 @@ class MainViewController: UIViewController,
     private var closeButton: UIBarButtonItem!
     private var connectButton: UIBarButtonItem!
     
-    var isSender: Bool = false
+    var ip: String = "" {
+        didSet {
+            UserDefaults.standard.set(ip, forKey: "ip")
+            UserDefaults.standard.synchronize()
+        }
+    }
+    var isSender: Bool = false {
+        didSet {
+            if isSender {
+                startCamera()
+            } else {
+                stopCamera()
+            }
+            
+            UserDefaults.standard.set(isSender, forKey: "isSender")
+            UserDefaults.standard.synchronize()
+        }
+    }
     
     var urlSession: URLSession!
     var webSocket: URLSessionWebSocketTask?
@@ -44,6 +62,19 @@ class MainViewController: UIViewController,
                                      delegate: self,
                                      delegateQueue: .main)
             self.urlSession = session
+            
+            let ud = UserDefaults.standard
+            ip = ud.string(forKey: "ip") ?? ""
+            isSender = ud.bool(forKey: "isSender")
+        }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        update {
+            ipTextField.text = ip
+            isSenderSwitch.isOn = isSender
         }
     }
     
@@ -194,7 +225,9 @@ class MainViewController: UIViewController,
     
     @objc private func onConnectButton() {
         update {
-            let url = URL(string: "ws://192.168.11.100:81")!
+            view.endEditing(true)
+            
+            let url = URL(string: "ws://\(self.ip):81")!
             let request = URLRequest(url: url)
             let task = urlSession.webSocketTask(with: request)
             self.webSocket = task
@@ -275,18 +308,22 @@ class MainViewController: UIViewController,
         }
     }
     
+    @IBAction private func onIPTextFieldChanged() {
+        update {
+            ip = ipTextField.text ?? ""
+        }
+    }
+    
     @IBAction private func onIsSenderSwitchChanged() {
         update {
             isSender = isSenderSwitch.isOn
-            
-            if isSender {
-                startCamera()
-            } else {
-                stopCamera()
-            }
         }
     }
-
+    
+    @IBAction private func onTapView() {
+        view.endEditing(true)
+    }
+    
     private func update(_ f: () throws -> Void) {
         do {
             try f()
@@ -313,16 +350,16 @@ class MainViewController: UIViewController,
         if let _ = webSocket {
             rightButton = closeButton
 
+            ipTextField.isEnabled = false
             isSenderSwitch.isEnabled = false
         } else {
             rightButton = connectButton
             
+            ipTextField.isEnabled = true
             isSenderSwitch.isEnabled = true
         }
         
         navigationItem.rightBarButtonItem = rightButton
-        
-        isSenderSwitch.isOn = isSender
         
         if let _ = captureSession {
             cameraView.isHidden = false
