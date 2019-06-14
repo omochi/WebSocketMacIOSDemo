@@ -35,7 +35,12 @@ class MainWindowController: NSWindowController, NSWindowDelegate {
     }
 
     func windowWillClose(_ notification: Notification) {
-        print("close")
+        for client in clients {
+            client.cancel()
+        }
+        clients = []
+        
+        listener.cancel()
     }
     
     private func handleNewConnection(_ newConnection: NWConnection) {
@@ -49,6 +54,14 @@ class MainWindowController: NSWindowController, NSWindowDelegate {
             
             self.update {
                 print("error: \(error)")
+                self.removeClient(client)
+            }
+        }
+        client.closeHandler = { [weak self, weak client] () in
+            guard let self = self,
+                let client = client else { return }
+            
+            self.update {
                 self.removeClient(client)
             }
         }
@@ -82,6 +95,15 @@ class MainWindowController: NSWindowController, NSWindowDelegate {
             }
             client.isJpegSender = true
             self.image = image
+            
+            for client in clients {
+                if client.isJpegSender {
+                    continue
+                }
+                
+                client.jpeg = m.jpeg
+                client.sendIfAvailable()
+            }
         default:
             break
         }

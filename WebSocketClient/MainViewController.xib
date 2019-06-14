@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14810.11" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14766.13"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
@@ -10,31 +9,62 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MainViewController" customModule="WebSocketClient" customModuleProvider="target">
             <connections>
                 <outlet property="cameraView" destination="HoA-oA-1rw" id="lXO-JL-hBN"/>
+                <outlet property="isSenderSwitch" destination="T8Z-bs-Vj7" id="Pst-CR-0Ji"/>
+                <outlet property="receiveImageView" destination="bG7-zF-znp" id="zm1-Um-lT5"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
-            <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+            <rect key="frame" x="0.0" y="0.0" width="414" height="1238"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HoA-oA-1rw">
-                    <rect key="frame" x="0.0" y="88" width="414" height="414"/>
-                    <color key="backgroundColor" xcode11CocoaTouchSystemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
-                    <constraints>
-                        <constraint firstAttribute="width" secondItem="HoA-oA-1rw" secondAttribute="height" multiplier="1:1" id="glo-4j-umd"/>
-                    </constraints>
-                </view>
+                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="p1Y-pK-0O0">
+                    <rect key="frame" x="0.0" y="44" width="414" height="859"/>
+                    <subviews>
+                        <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="a0X-Fq-4wN">
+                            <rect key="frame" x="0.0" y="0.0" width="414" height="31"/>
+                            <subviews>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="isSender" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="60J-7u-vXt">
+                                    <rect key="frame" x="0.0" y="0.0" width="365" height="31"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                    <nil key="textColor"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="T8Z-bs-Vj7">
+                                    <rect key="frame" x="365" y="0.0" width="51" height="31"/>
+                                    <connections>
+                                        <action selector="onIsSenderSwitchChanged" destination="-1" eventType="valueChanged" id="Zfy-S0-8g3"/>
+                                    </connections>
+                                </switch>
+                            </subviews>
+                        </stackView>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HoA-oA-1rw">
+                            <rect key="frame" x="0.0" y="31" width="414" height="414"/>
+                            <color key="backgroundColor" xcode11CocoaTouchSystemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                            <constraints>
+                                <constraint firstAttribute="width" secondItem="HoA-oA-1rw" secondAttribute="height" multiplier="1:1" id="glo-4j-umd"/>
+                            </constraints>
+                        </view>
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="bG7-zF-znp">
+                            <rect key="frame" x="0.0" y="445" width="414" height="414"/>
+                            <constraints>
+                                <constraint firstAttribute="width" secondItem="bG7-zF-znp" secondAttribute="height" multiplier="1:1" id="W6B-iS-9Iq"/>
+                            </constraints>
+                        </imageView>
+                    </subviews>
+                </stackView>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
-                <constraint firstItem="HoA-oA-1rw" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="C7f-z0-ha3"/>
-                <constraint firstAttribute="trailing" secondItem="HoA-oA-1rw" secondAttribute="trailing" id="Tn1-DD-Fku"/>
-                <constraint firstItem="HoA-oA-1rw" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="g1M-ZL-ieM"/>
+                <constraint firstItem="p1Y-pK-0O0" firstAttribute="trailing" secondItem="fnl-2z-Ty3" secondAttribute="trailing" id="Nab-rL-X2y"/>
+                <constraint firstItem="p1Y-pK-0O0" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="OdG-qR-SMm"/>
+                <constraint firstItem="p1Y-pK-0O0" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="aEE-DX-2HH"/>
             </constraints>
             <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
-            <point key="canvasLocation" x="79.710144927536234" y="152.67857142857142"/>
+            <point key="canvasLocation" x="79.710144927536234" y="267.1875"/>
         </view>
     </objects>
 </document>

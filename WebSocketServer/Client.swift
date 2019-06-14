@@ -6,6 +6,7 @@ class Client : CustomStringConvertible {
     
     var errorHandler: ((Error) -> Void)?
     var binaryHandler: ((Data) -> Void)?
+    var closeHandler: (() -> Void)?
     
     var isSending: Bool
     
@@ -30,6 +31,10 @@ class Client : CustomStringConvertible {
                 break
             }
         }
+    }
+    
+    func cancel() {
+        connection.cancel()
     }
     
     func start() {
@@ -65,8 +70,6 @@ class Client : CustomStringConvertible {
                         }
                     default: break
                     }
-                } else {
-                    print("no WebSocket Metadata")
                 }
                 
                 self.receive()
@@ -80,6 +83,7 @@ class Client : CustomStringConvertible {
         guard !isSending else { return }
         
         if let jpeg = self.jpeg {
+            self.jpeg = nil
             let message = JpegMessage(jpeg: jpeg)
             _send(data: message.serialize())
         }
@@ -95,7 +99,7 @@ class Client : CustomStringConvertible {
                                                   metadata: [webSocketMetadata])
         connection.send(content: data,
                         contentContext: context,
-                        isComplete: false,
+                        isComplete: true,
                         completion: .contentProcessed({ [weak self] (error) in
                             guard let self = self else { return }
                             
