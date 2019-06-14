@@ -112,9 +112,7 @@ export class MainView extends React.Component<{}, MainViewState> {
             const style: React.CSSProperties = {
                 width: "300px",
                 height: "300px",
-                objectFit: "cover",
-                transform: "rotate(90deg)",
-                WebkitTransform: "rotate(90deg)"
+                objectFit: "cover"
             };
 
             return <img src={this.state.imageSrc} style={style} />

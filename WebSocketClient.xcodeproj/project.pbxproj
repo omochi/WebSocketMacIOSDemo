@@ -13,6 +13,7 @@
 		D6C05BB022B217EC0044941A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D6C05BAE22B217EC0044941A /* LaunchScreen.storyboard */; };
 		D6C05BB922B218BB0044941A /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6C05BB722B218BB0044941A /* MainViewController.swift */; };
 		D6C05BBA22B218BB0044941A /* MainViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D6C05BB822B218BB0044941A /* MainViewController.xib */; };
+		D6EDF69022B3872F008DAFF4 /* Graphics.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6EDF68F22B3872F008DAFF4 /* Graphics.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +25,7 @@
 		D6C05BB122B217EC0044941A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D6C05BB722B218BB0044941A /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		D6C05BB822B218BB0044941A /* MainViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainViewController.xib; sourceTree = "<group>"; };
+		D6EDF68F22B3872F008DAFF4 /* Graphics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Graphics.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,6 +73,7 @@
 				D6C05BB122B217EC0044941A /* Info.plist */,
 				D6C05BB722B218BB0044941A /* MainViewController.swift */,
 				D6C05BB822B218BB0044941A /* MainViewController.xib */,
+				D6EDF68F22B3872F008DAFF4 /* Graphics.swift */,
 			);
 			path = WebSocketClient;
 			sourceTree = "<group>";
@@ -148,6 +151,7 @@
 			files = (
 				D6C05BA422B217EA0044941A /* AppDelegate.swift in Sources */,
 				D64DD9FC22B3307D004C203B /* Message.swift in Sources */,
+				D6EDF69022B3872F008DAFF4 /* Graphics.swift in Sources */,
 				D6C05BB922B218BB0044941A /* MainViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

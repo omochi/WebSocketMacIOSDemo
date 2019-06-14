@@ -126,32 +126,28 @@ class MainViewController: UIViewController,
                        didOutput sampleBuffer: CMSampleBuffer,
                        from connection: AVCaptureConnection)
     {
-        let ib = sampleBuffer.imageBuffer!
+        let captureCGImage = CGImage.fromVideoCaptureBuffer(sampleBuffer)
         
-        CVPixelBufferLockBaseAddress(ib, CVPixelBufferLockFlags.readOnly)
+        let size = CGSize(width: captureCGImage.width, height: captureCGImage.height)
         
-        let pointer = CVPixelBufferGetBaseAddressOfPlane(ib, 0)!
-        let bytesPerRow = CVPixelBufferGetBytesPerRow(ib)
-        let width = CVPixelBufferGetWidth(ib)
-        let height = CVPixelBufferGetHeight(ib)
-        
-        let colorSpace = CGColorSpaceCreateDeviceRGB()
-        let bitmapInfo: UInt32 = CGBitmapInfo.byteOrder32Little.rawValue |
+        let bitmapInfo = CGBitmapInfo.byteOrder32Little.rawValue |
             CGImageAlphaInfo.premultipliedFirst.rawValue
-        let cgContext = CGContext(data: pointer,
-                                  width: Int(width),
-                                  height: Int(height),
-                                  bitsPerComponent: 8,
-                                  bytesPerRow: Int(bytesPerRow),
-                                  space: colorSpace,
-                                  bitmapInfo: bitmapInfo)!
+    
+        let context = CGContext(data: nil,
+                                width: Int(size.height),
+                                height: Int(size.width),
+                                bitsPerComponent: 8,
+                                bytesPerRow: 4 * captureCGImage.width,
+                                space: CGColorSpaceCreateDeviceRGB(),
+                                bitmapInfo: bitmapInfo)!
+        context.translateBy(x: 0, y: size.width)
+        context.rotate(by: -90 * CGFloat.pi / 180)
+        context.draw(captureCGImage, in: CGRect(x: 0, y: 0, width: size.width, height: size.height))
         
-        let cgImage = cgContext.makeImage()!
-        let image = UIImage(cgImage: cgImage, scale: 1,
-                            orientation: UIImage.Orientation.right)
+        let cgImage = context.makeImage()!
+        
+        let image = UIImage(cgImage: cgImage)
         let jpeg = image.jpegData(compressionQuality: 0.9)!
-
-        CVPixelBufferUnlockBaseAddress(ib, CVPixelBufferLockFlags.readOnly)
         
         DispatchQueue.main.async {
             self.sendPendingJpeg = jpeg
